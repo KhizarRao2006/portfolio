@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-accent: var(--accent);
+    --color-card: var(--card);
+    --color-border: var(--border);
+    --color-muted: var(--muted);
+}
+
+:root {
+    --background: #ffffff;
+    --foreground: #111111;
+    --accent: #D4AF37;
+    --card: #f9f9f9;
+    --border: rgba(0, 0, 0, 0.08);
+    --muted: rgba(0, 0, 0, 0.5);
+
+    --font-geist: "Geist", sans-serif;
+}
+
+[data-theme='dark'] {
+    --background: #0f1110;
+    --foreground: #ffffff;
+    --accent: #E2B859;
+    --card: #181a19;
+    --border: rgba(255, 255, 255, 0.08);
+    --muted: rgba(255, 255, 255, 0.5);
+}
+
+* {
+    cursor: none !important;
+}
+
+@media (max-width: 1024px) {
+    * {
+        cursor: auto !important;
+    }
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: transform 0.15s ease-out;
+}
+
+.custom-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transition: background-color 0.3s ease;
+}
+
+/* Base Classes */
+.section-padding {
+    @apply py-24 sm:py-32;
+}
+
+.container-width {
+    @apply max-w-6xl mx-auto px-6;
+}
+
+.text-balance {
+    text-wrap: balance;
+}
+
+/* Glassmorphism Refined */
+.glass {
+    background: rgba(var(--background-rgb), 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+}
+
+/* Hide scrollbar but keep functionality */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
