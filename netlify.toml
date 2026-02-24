@@ -1,3 +1,6 @@
+# Netlify Build Reset
+
 [build]
+  base = ""
   command = "npm run build"
   publish = "out"
