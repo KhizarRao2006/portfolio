@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import { getDb } from "@/lib/firebase-admin";
 import { defaultContent, type SiteContent } from "@/lib/content";
 
+export const dynamic = 'force-dynamic';
+
 async function getContent(): Promise<SiteContent> {
     try {
         const db = getDb();

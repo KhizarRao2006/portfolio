@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/firebase-admin";
 import { defaultContent, type SiteContent } from "@/lib/content";
 
+export const dynamic = 'force-dynamic';
+
 // Helper: verify session
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
     const db = getDb();
