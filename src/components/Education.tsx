@@ -2,26 +2,19 @@
 
 import { motion } from "framer-motion";
 import { GraduationCap, BookOpen, Award } from "lucide-react";
+import type { EducationItem } from "@/lib/content";
 
-const education = [
-    {
-        institution: "Aptech Learning Pakistan",
-        degree: "Higher Diploma in Software Engineering (HDSE)",
-        icon: <GraduationCap size={24} className="text-accent" />,
-    },
-    {
-        institution: "Jamia Millia Degree College",
-        degree: "Intermediate (Computer Science)",
-        icon: <BookOpen size={24} className="text-accent" />,
-    },
-    {
-        institution: "Blue Moon Grammar School",
-        degree: "Matriculation (Computer Science)",
-        icon: <Award size={24} className="text-accent" />,
-    },
-];
+interface EducationProps {
+    content: EducationItem[];
+}
 
-export default function Education() {
+const iconMap: Record<string, React.ReactNode> = {
+    "graduation-cap": <GraduationCap size={24} className="text-accent" />,
+    "book-open": <BookOpen size={24} className="text-accent" />,
+    award: <Award size={24} className="text-accent" />,
+};
+
+export default function Education({ content }: EducationProps) {
     return (
         <section id="education" className="section-padding">
             <div className="container-width">
@@ -36,7 +29,7 @@ export default function Education() {
                 </motion.div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {education.map((edu, index) => (
+                    {content.map((edu, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -47,7 +40,7 @@ export default function Education() {
                             className="p-12 rounded-[3rem] bg-card/10 border border-border flex flex-col items-center text-center transition-all duration-500"
                         >
                             <div className="mb-8 w-16 h-16 rounded-3xl bg-accent/10 flex items-center justify-center">
-                                {edu.icon}
+                                {iconMap[edu.icon] || <GraduationCap size={24} className="text-accent" />}
                             </div>
                             <h3 className="text-xl font-bold mb-4 tracking-tight">{edu.degree}</h3>
                             <p className="text-muted font-bold tracking-widest text-[11px] uppercase">{edu.institution}</p>

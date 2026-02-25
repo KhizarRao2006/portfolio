@@ -3,96 +3,22 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Layers, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import type { ProjectItem } from "@/lib/content";
 
-type ProjectCategory = "All" | "Enterprise" | "Web" | "Mobile" | "AI";
-
-interface Project {
-    title: string;
-    description: string;
-    longDescription: string;
-    tags: string[];
-    category: ProjectCategory;
-    accent: string;
-    links?: {
-        live?: string;
-        github?: string;
-    };
-    highlights: string[];
+interface ProjectsProps {
+    content: ProjectItem[];
 }
 
-const projects: Project[] = [
-    {
-        title: "NHS Healthcare Referral System",
-        description: "AI-integrated healthcare referral management system for NHS UK.",
-        longDescription:
-            "Engineered a comprehensive referral management platform handling patient data routing, appointment scheduling, and inter-department communication for NHS healthcare providers.",
-        tags: ["Django", "Python", "SQL Server", "AI Integration"],
-        category: "AI",
-        accent: "from-blue-500/20 to-cyan-500/20",
-        highlights: ["HIPAA-compliant architecture", "AI-powered triage", "Real-time referral tracking"],
-    },
-    {
-        title: "WIP Commander",
-        description: "Enterprise production tracking and work-in-progress management system.",
-        longDescription:
-            "Led maintenance and feature development for a large-scale production management platform used across manufacturing operations to track inventory, orders, and job progress.",
-        tags: ["PHP", "Laravel", "SQL Server", "ERP"],
-        category: "Enterprise",
-        accent: "from-amber-500/20 to-orange-500/20",
-        highlights: ["Production pipeline tracking", "Real-time dashboards", "Multi-tenant architecture"],
-    },
-    {
-        title: "Custom ERP & CRM Suite",
-        description: "Full-scale enterprise resource planning and customer relationship management.",
-        longDescription:
-            "Architected modular ERP and CRM solutions with custom business logic engines, role-based access control, and automated reporting for enterprise clients.",
-        tags: ["PHP", "Laravel", "MySQL", "REST APIs"],
-        category: "Enterprise",
-        accent: "from-emerald-500/20 to-green-500/20",
-        highlights: ["Modular architecture", "Role-based access", "Automated reporting"],
-    },
-    {
-        title: "Portfolio Website",
-        description: "Modern, high-performance portfolio with premium design and animations.",
-        longDescription:
-            "This very website — built with Next.js 16, Tailwind CSS v4, and Framer Motion. Features custom cursor, theme switching, glassmorphism, and a serverless contact form.",
-        tags: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
-        category: "Web",
-        accent: "from-violet-500/20 to-purple-500/20",
-        links: {
-            github: "https://github.com/khizarrao2006/portfolio",
-        },
-        highlights: ["Custom cursor engine", "Dark/light themes", "Serverless form handling"],
-    },
-    {
-        title: "Market Teller",
-        description: "AI-powered mobile app for stock market insights and portfolio tracking.",
-        longDescription:
-            "Developed a Flutter-based mobile application with Firebase backend featuring AI-driven market analysis, portfolio management, and real-time stock data visualization.",
-        tags: ["Flutter", "Dart", "Firebase", "AI"],
-        category: "Mobile",
-        accent: "from-rose-500/20 to-pink-500/20",
-        highlights: ["AI market analysis", "Real-time data", "Portfolio management"],
-    },
-    {
-        title: "Enterprise Delivery Platform",
-        description: "Multi-role logistics platform with real-time tracking and admin controls.",
-        longDescription:
-            "Built a comprehensive delivery management system supporting users, drivers, and restaurants with real-time order tracking, route optimization, and admin analytics.",
-        tags: ["Flutter", "Firebase", "Node.js", "Cloud Functions"],
-        category: "Mobile",
-        accent: "from-sky-500/20 to-indigo-500/20",
-        highlights: ["Multi-role system", "Real-time tracking", "Admin analytics"],
-    },
-];
+type ProjectCategory = string;
 
-const categories: ProjectCategory[] = ["All", "Enterprise", "Web", "Mobile", "AI"];
-
-export default function Projects() {
-    const [activeCategory, setActiveCategory] = useState<ProjectCategory>("All");
+export default function Projects({ content }: ProjectsProps) {
+    const [activeCategory, setActiveCategory] = useState<string>("All");
     const [expandedProject, setExpandedProject] = useState<number | null>(null);
 
-    const filtered = activeCategory === "All" ? projects : projects.filter((p) => p.category === activeCategory);
+    // Derive categories from content
+    const categories = ["All", ...Array.from(new Set(content.map((p) => p.category)))];
+
+    const filtered = activeCategory === "All" ? content : content.filter((p) => p.category === activeCategory);
 
     return (
         <section id="projects" className="section-padding">
@@ -148,9 +74,7 @@ export default function Projects() {
                                 transition={{ duration: 0.4, delay: i * 0.05 }}
                                 className="group relative"
                             >
-                                <div
-                                    className={`relative p-10 rounded-[2.5rem] border border-border bg-card/10 hover:bg-card/30 transition-all duration-500 overflow-hidden h-full flex flex-col`}
-                                >
+                                <div className="relative p-10 rounded-[2.5rem] border border-border bg-card/10 hover:bg-card/30 transition-all duration-500 overflow-hidden h-full flex flex-col">
                                     {/* Background gradient */}
                                     <div
                                         className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${project.accent} blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700`}

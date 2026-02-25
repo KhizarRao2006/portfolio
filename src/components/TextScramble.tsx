@@ -1,18 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
-const phrases = [
-    "Excellence",
-    "Scalability",
-    "Precision",
-    "Innovation",
-];
+interface TextScrambleProps {
+    phrases?: string[];
+}
 
-export default function TextScramble() {
+export default function TextScramble({ phrases = ["Excellence", "Scalability", "Precision", "Innovation"] }: TextScrambleProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [displayText, setDisplayText] = useState(phrases[0]);
+    const [displayText, setDisplayText] = useState(phrases[0] || "Excellence");
     const [isScrambling, setIsScrambling] = useState(false);
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
@@ -52,6 +48,8 @@ export default function TextScramble() {
     );
 
     useEffect(() => {
+        if (phrases.length <= 1) return;
+
         const timer = setInterval(() => {
             setCurrentIndex((prev) => {
                 const next = (prev + 1) % phrases.length;
@@ -61,7 +59,7 @@ export default function TextScramble() {
         }, 3500);
 
         return () => clearInterval(timer);
-    }, [scramble]);
+    }, [scramble, phrases]);
 
     return (
         <span className="text-accent underline decoration-4 underline-offset-8 decoration-accent/30 inline-block min-w-[200px]">

@@ -1,11 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Download, Mail, ArrowRight } from "lucide-react";
+import { Download, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import TextScramble from "@/components/TextScramble";
+import type { HeroContent } from "@/lib/content";
 
-export default function Hero() {
+interface HeroProps {
+    content: HeroContent;
+}
+
+export default function Hero({ content }: HeroProps) {
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -35,7 +40,7 @@ export default function Hero() {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
                         </span>
-                        Open for worldwide opportunities
+                        {content.badge}
                     </motion.div>
 
                     <motion.h1
@@ -43,7 +48,7 @@ export default function Hero() {
                         className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-balance"
                     >
                         Engineering <br />
-                        <TextScramble /> <br />
+                        <TextScramble phrases={content.scramblePhrases} /> <br />
                         in Software.
                     </motion.h1>
 
@@ -51,7 +56,7 @@ export default function Hero() {
                         variants={item}
                         className="text-xl md:text-2xl text-foreground/60 mb-12 max-w-2xl leading-relaxed font-medium"
                     >
-                        I&apos;m <span className="text-foreground">Khizar Rao</span>. A Full-Stack & Mobile Developer specializing in high-fidelity products, scalable enterprise ecosystems, and business logic.
+                        {content.description}
                     </motion.p>
 
                     <motion.div variants={item} className="flex flex-wrap gap-4 items-center">
@@ -86,20 +91,15 @@ export default function Hero() {
                         variants={item}
                         className="mt-20 flex items-center gap-12"
                     >
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-bold">02+</span>
-                            <span className="text-[10px] text-muted font-bold uppercase tracking-widest">Years Exp.</span>
-                        </div>
-                        <div className="w-[1px] h-8 bg-border" />
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-bold">20+</span>
-                            <span className="text-[10px] text-muted font-bold uppercase tracking-widest">Projects</span>
-                        </div>
-                        <div className="w-[1px] h-8 bg-border" />
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-bold">10+</span>
-                            <span className="text-[10px] text-muted font-bold uppercase tracking-widest">Tech Stacks</span>
-                        </div>
+                        {content.stats.map((stat, i) => (
+                            <div key={i} className="flex items-center gap-12">
+                                {i > 0 && <div className="w-[1px] h-8 bg-border" />}
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-bold">{stat.value}</span>
+                                    <span className="text-[10px] text-muted font-bold uppercase tracking-widest">{stat.label}</span>
+                                </div>
+                            </div>
+                        ))}
                     </motion.div>
                 </motion.div>
             </div>

@@ -1,26 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Briefcase, Calendar, MapPin, Zap } from "lucide-react";
+import { Briefcase, Calendar } from "lucide-react";
+import type { ExperienceItem } from "@/lib/content";
 
-const experiences = [
-    {
-        company: "Cartzlink",
-        role: "Full-stack Developer",
-        period: "Oct 2024 — Present",
-        desc: "Architecting custom ERP, CRM, and Production systems. Leading maintenance for WIP Commander and engineered AI-integrated systems for NHS UK.",
-        tags: ["PHP", "Laravel", "Django", "SQL Server"]
-    },
-    {
-        company: "Quantum Leaps",
-        role: "PHP Developer (Contract)",
-        period: "Sep 2024 — Oct 2024",
-        desc: "Delivered rapid CRUD architectures and static business modules while coordinating system requirements.",
-        tags: ["PHP", "Architecture", "Consultancy"]
-    }
-];
+interface ExperienceProps {
+    content: ExperienceItem[];
+}
 
-export default function Experience() {
+export default function Experience({ content }: ExperienceProps) {
     return (
         <section id="experience" className="section-padding">
             <div className="container-width">
@@ -35,7 +23,7 @@ export default function Experience() {
                 </motion.div>
 
                 <div className="space-y-6">
-                    {experiences.map((exp, i) => (
+                    {content.map((exp, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 20 }}

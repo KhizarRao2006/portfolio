@@ -1,10 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, Linkedin, Github, Send, CheckCircle2, Loader2 } from "lucide-react";
+import { Linkedin, Github, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
+import type { ContactContent } from "@/lib/content";
 
-export default function Contact() {
+interface ContactProps {
+    content: ContactContent;
+}
+
+const socialIconMap: Record<string, React.ReactNode> = {
+    linkedin: <Linkedin size={20} />,
+    github: <Github size={20} />,
+};
+
+export default function Contact({ content }: ContactProps) {
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -15,7 +25,6 @@ export default function Contact() {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            // Using Formspree (Automation for static/serverless portfolios)
             const response = await fetch("https://formspree.io/f/mpqjovvz", {
                 method: "POST",
                 body: JSON.stringify({
@@ -58,21 +67,27 @@ export default function Contact() {
                         <div className="space-y-8 mb-12">
                             <div className="flex flex-col gap-2">
                                 <span className="text-accent text-[10px] font-black uppercase tracking-[0.4em]">Direct Connection</span>
-                                <a href="tel:+923053630364" className="text-4xl font-light hover:text-accent transition-all">+92 305 3630364</a>
+                                <a href={`tel:${content.phone.replace(/\s/g, "")}`} className="text-4xl font-light hover:text-accent transition-all">{content.phone}</a>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <span className="text-accent text-[10px] font-black uppercase tracking-[0.4em]">Written Correspondence</span>
-                                <a href="mailto:Khizarraoworks@gmail.com" className="text-4xl font-light hover:text-accent transition-all break-all">Khizarraoworks@gmail.com</a>
+                                <a href={`mailto:${content.email}`} className="text-4xl font-light hover:text-accent transition-all break-all">{content.email}</a>
                             </div>
                         </div>
 
                         <div className="flex gap-4">
-                            <a href="https://www.linkedin.com/in/khizar-rao" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-background/5 flex items-center justify-center hover:bg-accent hover:text-background transition-all">
-                                <Linkedin size={20} />
-                            </a>
-                            <a href="https://github.com/khizarrao2006" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-background/5 flex items-center justify-center hover:bg-accent hover:text-background transition-all">
-                                <Github size={20} />
-                            </a>
+                            {content.socialLinks.map((link, i) => (
+                                <a
+                                    key={i}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-12 h-12 rounded-2xl bg-background/5 flex items-center justify-center hover:bg-accent hover:text-background transition-all"
+                                    aria-label={link.platform}
+                                >
+                                    {socialIconMap[link.platform] || <span className="text-xs font-bold uppercase">{link.platform[0]}</span>}
+                                </a>
+                            ))}
                         </div>
                     </div>
 
@@ -104,9 +119,9 @@ export default function Contact() {
                             </motion.div>
                         ) : (
                             <div className="w-full">
-                                <h3 className="text-2xl font-bold mb-8">Secure Your Infrastructure</h3>
+                                <h3 className="text-2xl font-bold mb-8">{content.formHeading}</h3>
                                 <p className="text-muted/60 mb-10 font-medium italic">
-                                    &quot;Building systems and strategies that make a difference.&quot;
+                                    &quot;{content.formQuote}&quot;
                                 </p>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
