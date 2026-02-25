@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Download, Mail, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import TextScramble from "@/components/TextScramble";
 
 export default function Hero() {
     const container = {
@@ -42,7 +43,7 @@ export default function Hero() {
                         className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-balance"
                     >
                         Engineering <br />
-                        <span className="text-accent underline decoration-4 underline-offset-8 decoration-accent/30">Excellence</span> <br />
+                        <TextScramble /> <br />
                         in Software.
                     </motion.h1>
 

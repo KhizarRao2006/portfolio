@@ -23,7 +23,7 @@ export default function About() {
                         <div className="flex flex-col gap-8 text-lg font-medium text-foreground/60 leading-relaxed">
                             <p>
                                 Full-stack and Mobile Application Developer with nearly 2 years of experience building web, mobile, and enterprise solutions.
-                                I deliver systems that don&apos;t just work—they scale.
+                                I deliver systems that don&apos;t just work they scale.
                             </p>
                             <p>
                                 Specialized in <strong>ERP & CRM architecture</strong>, I solve complex business logic problems using modern high-performance stacks.

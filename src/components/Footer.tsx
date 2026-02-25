@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
@@ -10,8 +12,8 @@ export default function Footer() {
                 </div>
 
                 <div className="flex gap-10">
-                    <a href="#" className="hover:text-accent transition-colors text-[10px] font-black uppercase tracking-widest">Privacy</a>
-                    <a href="#" className="hover:text-accent transition-colors text-[10px] font-black uppercase tracking-widest">Legal</a>
+                    <Link href="/privacy" className="hover:text-accent transition-colors text-[10px] font-black uppercase tracking-widest">Privacy</Link>
+                    <Link href="/legal" className="hover:text-accent transition-colors text-[10px] font-black uppercase tracking-widest">Legal</Link>
                 </div>
 
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">
@@ -21,3 +23,4 @@ export default function Footer() {
         </footer>
     );
 }
+
