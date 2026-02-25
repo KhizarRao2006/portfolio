@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Khizar Rao | Senior Full-Stack & Mobile Developer",
-    description: "Senior developer portfolio of Khizar Rao. Expert in scaling enterprise systems, ERP solutions, and high-performance mobile applications.",
+    title: "Khizar Rao | Full-Stack & Mobile Developer",
+    description: "Full-Stack & Mobile Developer portfolio of Khizar Rao. Expert in scaling enterprise systems, ERP solutions, and high-performance mobile applications.",
     keywords: ["Full-Stack Developer", "Mobile Developer", "Flutter", "ERP Solutions", "Next.js", "React"],
     authors: [{ name: "Khizar Rao" }],
     openGraph: {

@@ -106,7 +106,7 @@ export default function Contact() {
                             <div className="w-full">
                                 <h3 className="text-2xl font-bold mb-8">Secure Your Infrastructure</h3>
                                 <p className="text-muted/60 mb-10 font-medium italic">
-                                    &quot;I am currently available for senior roles and high-impact enterprise consultations.&quot;
+                                    &quot;Building systems and strategies that make a difference..&quot;
                                 </p>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">

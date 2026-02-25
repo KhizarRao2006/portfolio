@@ -50,7 +50,7 @@ export default function Hero() {
                         variants={item}
                         className="text-xl md:text-2xl text-foreground/60 mb-12 max-w-2xl leading-relaxed font-medium"
                     >
-                        I&apos;m <span className="text-foreground">Khizar Rao</span>. A Senior Full-Stack & Mobile Developer specializing in high-fidelity products, scalable enterprise ecosystems, and business logic.
+                        I&apos;m <span className="text-foreground">Khizar Rao</span>. A Full-Stack & Mobile Developer specializing in high-fidelity products, scalable enterprise ecosystems, and business logic.
                     </motion.p>
 
                     <motion.div variants={item} className="flex flex-wrap gap-4 items-center">
