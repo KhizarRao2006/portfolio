@@ -56,6 +56,31 @@ export interface ContactContent {
     formQuote: string;
 }
 
+export interface LegalContent {
+    title: string;
+    lastUpdated: string;
+    sections: { heading: string; content: string }[];
+}
+
+export interface ResumeSettings {
+    url: string;
+    label: string;
+}
+
+export interface AppearanceSettings {
+    cursorStyle:
+    | "default" | "minimal" | "glow" | "ring" | "inverter" | "crosshair" | "blade"
+    | "dotmatrix" | "reticle" | "vector" | "axis" | "eonpulse" | "hologram" | "cybertrail"
+    | "quantum" | "plasma" | "orbital" | "impact" | "flare" | "ember" | "shockwave"
+    | "phantom" | "magnet" | "gravity" | "ripple" | "elastic" | "warp" | "glitch"
+    | "shard" | "hoverlift" | "spotlight" | "softfocus" | "pulsefade" | "snap" | "drift"
+    | "blend" | "adaptiveechosurge" | "vortex" | "arcradial" | "spectragridlock" | "caliper"
+    | "tracer" | "pinpoint";
+    accentColor: string;
+    enableGrain: boolean;
+    disabledCursorStyles: string[];
+}
+
 export interface SectionVisibility {
     hero: boolean;
     about: boolean;
@@ -75,6 +100,10 @@ export interface SiteContent {
     education: EducationItem[];
     contact: ContactContent;
     visibility: SectionVisibility;
+    legal: LegalContent;
+    privacy: LegalContent;
+    resume: ResumeSettings;
+    appearance: AppearanceSettings;
 }
 
 // ============================================================
@@ -225,4 +254,28 @@ export const defaultContent: SiteContent = {
         formHeading: "Secure Your Infrastructure",
         formQuote: "Building systems and strategies that make a difference.",
     },
+    legal: {
+        title: "Legal Terms",
+        lastUpdated: "February 2026",
+        sections: [
+            { heading: "Usage", content: "This website and its content are for informational purposes." }
+        ]
+    },
+    privacy: {
+        title: "Privacy Policy",
+        lastUpdated: "February 2026",
+        sections: [
+            { heading: "Data", content: "We do not store your personal data unless provided via the contact form." }
+        ]
+    },
+    resume: {
+        url: "",
+        label: "Download CV"
+    },
+    appearance: {
+        cursorStyle: "glow",
+        accentColor: "#D4AF37",
+        enableGrain: true,
+        disabledCursorStyles: []
+    }
 };

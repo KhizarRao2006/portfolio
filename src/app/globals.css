@@ -25,18 +25,8 @@
     --foreground: #ffffff;
     --accent: #E2B859;
     --card: #181a19;
-    --border: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.1);
     --muted: rgba(255, 255, 255, 0.5);
-}
-
-* {
-    cursor: none !important;
-}
-
-@media (max-width: 1024px) {
-    * {
-        cursor: auto !important;
-    }
 }
 
 body {
@@ -48,7 +38,14 @@ body {
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+/* Custom Cursor Base */
+.custom-cursor, .custom-cursor-dot {
+    pointer-events: none;
+    z-index: 9999;
+}
+
 .custom-cursor {
+    mix-blend-mode: difference;
     position: fixed;
     top: 0;
     left: 0;
@@ -56,10 +53,6 @@ body {
     height: 24px;
     background: var(--accent);
     border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    mix-blend-mode: difference;
-    transition: transform 0.15s ease-out;
 }
 
 .custom-cursor-dot {
@@ -70,9 +63,26 @@ body {
     height: 6px;
     background: var(--accent);
     border-radius: 50%;
-    pointer-events: none;
-    z-index: 10000;
-    transition: background-color 0.3s ease;
+}
+
+/* Grain Animation */
+.grain-bg {
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    animation: noise 0.2s infinite;
+}
+
+@keyframes noise {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-1%, -1%); }
+    20% { transform: translate(1%, 1%); }
+    30% { transform: translate(-2%, -2%); }
+    40% { transform: translate(2%, 2%); }
+    50% { transform: translate(-1%, 2%); }
+    60% { transform: translate(2%, -1%); }
+    70% { transform: translate(1%, 2%); }
+    80% { transform: translate(-2%, 1%); }
+    90% { transform: translate(1%, -2%); }
+    100% { transform: translate(0, 0); }
 }
 
 /* Base Classes */
@@ -96,7 +106,7 @@ body {
     border: 1px solid var(--border);
 }
 
-/* Hide scrollbar but keep functionality */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }

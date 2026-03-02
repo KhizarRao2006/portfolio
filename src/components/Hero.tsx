@@ -8,9 +8,10 @@ import type { HeroContent } from "@/lib/content";
 
 interface HeroProps {
     content: HeroContent;
+    resume: { url: string; label: string };
 }
 
-export default function Hero({ content }: HeroProps) {
+export default function Hero({ content, resume }: HeroProps) {
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -67,24 +68,17 @@ export default function Hero({ content }: HeroProps) {
                             Let&apos;s Build Something <ArrowRight size={20} />
                         </Link>
 
-                        <div className="flex gap-2">
+                        {resume?.url && (
                             <a
-                                href="/assets/khizar-rao-cv.pdf"
-                                download
+                                href={resume.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="p-4 rounded-2xl border border-border hover:bg-muted/5 transition-all flex items-center gap-2 text-sm font-bold uppercase tracking-widest"
-                                title="Download CV"
+                                title={resume.label}
                             >
-                                CV <Download size={18} />
+                                {resume.label} <Download size={18} />
                             </a>
-                            <a
-                                href="/assets/khizar-rao-resume.pdf"
-                                download
-                                className="p-4 rounded-2xl border border-border hover:bg-muted/5 transition-all flex items-center gap-2 text-sm font-bold uppercase tracking-widest"
-                                title="Download Resume"
-                            >
-                                RESUME <Download size={18} />
-                            </a>
-                        </div>
+                        )}
                     </motion.div>
 
                     <motion.div

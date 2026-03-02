@@ -7,6 +7,7 @@ import Projects from "@/components/Projects";
 import Education from "@/components/Education";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import SettingsManager from "@/components/SettingsManager";
 import { getDb } from "@/lib/firebase-admin";
 import { defaultContent, type SiteContent } from "@/lib/content";
 
@@ -19,7 +20,15 @@ async function getContent(): Promise<SiteContent> {
 
         const doc = await db.collection("content").doc("site").get();
         if (!doc.exists) return defaultContent;
-        return doc.data() as SiteContent;
+
+        const data = doc.data() || {};
+        return {
+            ...defaultContent,
+            ...data,
+            visibility: { ...defaultContent.visibility, ...(data.visibility || {}) },
+            appearance: { ...defaultContent.appearance, ...(data.appearance || {}) },
+            resume: { ...defaultContent.resume, ...(data.resume || {}) }
+        } as SiteContent;
     } catch {
         return defaultContent;
     }
@@ -32,7 +41,8 @@ export default async function Home() {
     return (
         <main className="min-h-screen">
             <Navbar />
-            {vis.hero && <Hero content={content.hero} />}
+            <SettingsManager defaults={content.appearance} resumeUrl={content.resume?.url} />
+            {vis.hero && <Hero content={content.hero} resume={content.resume} />}
             {vis.about && <About content={content.about} />}
             {vis.experience && <Experience content={content.experience} />}
             {vis.skills && <Skills content={content.skills} />}

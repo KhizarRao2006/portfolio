@@ -9,7 +9,7 @@ import type { SiteContent, ExperienceItem, SkillGroup, ProjectItem, EducationIte
 // ============================================================
 // Section tabs
 // ============================================================
-const tabs = ["Visibility", "Hero", "About", "Experience", "Skills", "Projects", "Education", "Contact"] as const;
+const tabs = ["Visibility", "Hero", "About", "Experience", "Skills", "Projects", "Education", "Contact", "Legal", "Privacy", "Assets", "Settings"] as const;
 type Tab = (typeof tabs)[number];
 
 // ============================================================
@@ -278,6 +278,10 @@ export default function EditPage() {
                         {activeTab === "Projects" && <ProjectsEditor content={content} setContent={setContent} />}
                         {activeTab === "Education" && <EducationEditor content={content} setContent={setContent} />}
                         {activeTab === "Contact" && <ContactEditor content={content} setContent={setContent} />}
+                        {activeTab === "Legal" && <LegalEditor content={content} setContent={setContent} type="legal" />}
+                        {activeTab === "Privacy" && <LegalEditor content={content} setContent={setContent} type="privacy" />}
+                        {activeTab === "Assets" && <AssetsEditor content={content} setContent={setContent} />}
+                        {activeTab === "Settings" && <AppearanceEditor content={content} setContent={setContent} />}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -353,8 +357,8 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
         <button
             onClick={() => onChange(!checked)}
             className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 ${checked
-                    ? "border-accent/40 bg-accent/5"
-                    : "border-border bg-card/5 opacity-60"
+                ? "border-accent/40 bg-accent/5"
+                : "border-border bg-card/5 opacity-60"
                 }`}
         >
             <div className="flex items-center gap-3">
@@ -825,3 +829,278 @@ function ContactEditor({ content, setContent }: EditorProps) {
         </div>
     );
 }
+
+// ============================================================
+// Legal / Privacy Editor
+// ============================================================
+function LegalEditor({ content, setContent, type }: EditorProps & { type: "legal" | "privacy" }) {
+    const fallback = { title: type === "legal" ? "Legal Terms" : "Privacy Policy", lastUpdated: new Date().toISOString().split("T")[0], sections: [] as { heading: string; content: string }[] };
+    const data = content[type] || fallback;
+    const update = (patch: Partial<typeof data>) => setContent((prev) => prev && { ...prev, [type]: { ...data, ...patch } });
+
+    return (
+        <div className="space-y-8">
+            <SectionTitle>{type === "legal" ? "Legal Terms" : "Privacy Policy"}</SectionTitle>
+            <Card>
+                <div className="space-y-4">
+                    <div>
+                        <Label>Page Title</Label>
+                        <Input value={data.title} onChange={(v) => update({ title: v })} />
+                    </div>
+                    <div>
+                        <Label>Last Updated</Label>
+                        <Input value={data.lastUpdated} onChange={(v) => update({ lastUpdated: v })} />
+                    </div>
+                </div>
+            </Card>
+
+            <div className="space-y-6">
+                {data.sections.map((section, i) => (
+                    <Card key={i}>
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs font-bold text-muted uppercase tracking-widest">Section {i + 1}</span>
+                            <RemoveButton onClick={() => update({ sections: data.sections.filter((_, idx) => idx !== i) })} />
+                        </div>
+                        <div className="space-y-4">
+                            <Input value={section.heading} onChange={(v) => {
+                                const sections = [...data.sections];
+                                sections[i] = { ...sections[i], heading: v };
+                                update({ sections });
+                            }} placeholder="Heading" />
+                            <TextArea value={section.content} onChange={(v) => {
+                                const sections = [...data.sections];
+                                sections[i] = { ...sections[i], content: v };
+                                update({ sections });
+                            }} placeholder="Content" rows={4} />
+                        </div>
+                    </Card>
+                ))}
+                <AddButton onClick={() => update({ sections: [...data.sections, { heading: "", content: "" }] })} label="Add Section" />
+            </div>
+        </div>
+    );
+}
+
+// ============================================================
+// Assets Editor (Resume)
+// ============================================================
+function AssetsEditor({ content, setContent }: EditorProps) {
+    const resume = content.resume || { url: "", label: "Download CV" };
+    const update = (patch: Partial<typeof resume>) => setContent((prev) => prev && { ...prev, resume: { ...resume, ...patch } });
+
+    return (
+        <div className="space-y-8">
+            <SectionTitle>Site Assets</SectionTitle>
+            <Card>
+                <Label>Resume / CV Settings</Label>
+                <div className="space-y-4">
+                    <div>
+                        <Label>URL (Link to PDF/Google Drive)</Label>
+                        <Input value={resume.url} onChange={(v) => update({ url: v })} placeholder="https://..." />
+                    </div>
+                    <div>
+                        <Label>Button Label</Label>
+                        <Input value={resume.label} onChange={(v) => update({ label: v })} />
+                    </div>
+                </div>
+            </Card>
+        </div>
+    );
+}
+
+// ============================================================
+// Appearance Settings Editor
+// ============================================================
+function AppearanceEditor({ content, setContent }: EditorProps) {
+    const app = content.appearance || { cursorStyle: "glow", accentColor: "#D4AF37", enableGrain: true, disabledCursorStyles: [] };
+    const disabled = app.disabledCursorStyles || [];
+    const update = (patch: Partial<typeof app>) => setContent((prev) => prev && { ...prev, appearance: { ...app, ...patch } });
+
+    const toggleCursorStyle = (style: string) => {
+        const current = [...disabled];
+        const idx = current.indexOf(style);
+        if (idx > -1) {
+            current.splice(idx, 1);
+        } else {
+            current.push(style);
+        }
+        update({ disabledCursorStyles: current });
+    };
+
+    const allStyles: { category: string; styles: { value: string; label: string }[] }[] = [
+        {
+            category: "Core",
+            styles: [
+                { value: "default", label: "Default" },
+                { value: "minimal", label: "Minimal" },
+                { value: "glow", label: "Glow" },
+                { value: "ring", label: "Ring" },
+                { value: "inverter", label: "Inverter" },
+                { value: "crosshair", label: "Crosshair" },
+                { value: "blade", label: "Blade" },
+            ]
+        },
+        {
+            category: "Tech / Sci-Fi",
+            styles: [
+                { value: "dotmatrix", label: "Dot Matrix" },
+                { value: "reticle", label: "Reticle" },
+                { value: "vector", label: "Vector" },
+                { value: "axis", label: "Axis" },
+                { value: "eonpulse", label: "Eon Pulse" },
+                { value: "hologram", label: "Hologram" },
+                { value: "cybertrail", label: "Cyber Trail" },
+            ]
+        },
+        {
+            category: "Energy / Particle",
+            styles: [
+                { value: "quantum", label: "Quantum" },
+                { value: "plasma", label: "Plasma" },
+                { value: "orbital", label: "Orbital" },
+                { value: "impact", label: "Impact" },
+                { value: "flare", label: "Flare" },
+                { value: "ember", label: "Ember" },
+                { value: "shockwave", label: "Shockwave" },
+            ]
+        },
+        {
+            category: "Physics / Motion",
+            styles: [
+                { value: "phantom", label: "Phantom" },
+                { value: "magnet", label: "Magnet" },
+                { value: "gravity", label: "Gravity" },
+                { value: "ripple", label: "Ripple" },
+                { value: "elastic", label: "Elastic" },
+                { value: "warp", label: "Warp" },
+                { value: "glitch", label: "Glitch" },
+            ]
+        },
+        {
+            category: "Shape / Visual",
+            styles: [
+                { value: "shard", label: "Shard" },
+                { value: "hoverlift", label: "Hover Lift" },
+                { value: "spotlight", label: "Spotlight" },
+                { value: "softfocus", label: "Soft Focus" },
+                { value: "pulsefade", label: "Pulse Fade" },
+                { value: "snap", label: "Snap" },
+                { value: "drift", label: "Drift" },
+            ]
+        },
+        {
+            category: "Advanced",
+            styles: [
+                { value: "blend", label: "Blend" },
+                { value: "adaptiveechosurge", label: "Echo Surge" },
+                { value: "vortex", label: "Vortex" },
+                { value: "arcradial", label: "Arc Radial" },
+                { value: "spectragridlock", label: "Gridlock" },
+                { value: "caliper", label: "Caliper" },
+                { value: "tracer", label: "Tracer" },
+                { value: "pinpoint", label: "Pinpoint" },
+            ]
+        },
+    ];
+
+    return (
+        <div className="space-y-8">
+            <SectionTitle>Visual Appearance</SectionTitle>
+            <Card>
+                <div className="space-y-6">
+                    <div>
+                        <Label>Default Cursor Style</Label>
+                        <select
+                            value={app.cursorStyle}
+                            onChange={(e) => update({ cursorStyle: e.target.value as any })}
+                            className="w-full px-5 py-3 rounded-xl border border-border bg-card/10 focus:border-accent outline-none font-medium transition-colors text-sm"
+                        >
+                            {allStyles.flatMap(g => g.styles).filter(s => !disabled.includes(s.value)).map(s => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <Label>Accent Theme Color</Label>
+                        <div className="flex gap-4 items-center">
+                            <input
+                                type="color"
+                                value={app.accentColor}
+                                onChange={(e) => update({ accentColor: e.target.value })}
+                                className="w-12 h-12 rounded-lg border-none bg-transparent cursor-pointer"
+                            />
+                            <Input value={app.accentColor} onChange={(v) => update({ accentColor: v })} />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <span className="text-sm font-bold">Film Grain Texture</span>
+                            <p className="text-xs text-muted">Adds a subtle premium noise overlay to the site.</p>
+                        </div>
+                        <button
+                            onClick={() => update({ enableGrain: !app.enableGrain })}
+                            className={`w-11 h-6 rounded-full transition-colors relative ${app.enableGrain ? "bg-accent" : "bg-border"}`}
+                        >
+                            <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-background transition-transform ${app.enableGrain ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                        </button>
+                    </div>
+                </div>
+            </Card>
+
+            {/* Cursor Style Toggles */}
+            <Card>
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <Label>Enable / Disable Cursor Styles</Label>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => update({ disabledCursorStyles: [] })}
+                                className="text-[10px] font-bold uppercase tracking-wider text-accent hover:underline"
+                            >
+                                Enable All
+                            </button>
+                            <span className="text-muted text-xs">|</span>
+                            <button
+                                onClick={() => update({ disabledCursorStyles: allStyles.flatMap(g => g.styles.map(s => s.value)) })}
+                                className="text-[10px] font-bold uppercase tracking-wider text-muted hover:text-foreground hover:underline"
+                            >
+                                Disable All
+                            </button>
+                        </div>
+                    </div>
+                    <p className="text-xs text-muted -mt-4">
+                        Toggle which cursor styles are visible to visitors in the Customize sidebar. Disabled styles won&apos;t appear as options.
+                    </p>
+
+                    {allStyles.map((group) => (
+                        <div key={group.category}>
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted mb-3">{group.category}</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                {group.styles.map((s) => {
+                                    const isEnabled = !disabled.includes(s.value);
+                                    return (
+                                        <div
+                                            key={s.value}
+                                            className={`flex items-center justify-between px-4 py-2.5 rounded-xl border transition-all ${isEnabled ? "border-accent/30 bg-accent/5" : "border-border opacity-50"}`}
+                                        >
+                                            <span className="text-xs font-bold">{s.label}</span>
+                                            <button
+                                                onClick={() => toggleCursorStyle(s.value)}
+                                                className={`w-9 h-5 rounded-full transition-colors relative ${isEnabled ? "bg-accent" : "bg-border"}`}
+                                            >
+                                                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-background transition-transform ${isEnabled ? "translate-x-[18px]" : "translate-x-0.5"}`} />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    );
+}
+
