@@ -81,6 +81,19 @@ export interface AppearanceSettings {
     disabledCursorStyles: string[];
 }
 
+export interface AIRule {
+    trigger: string;
+    response: string;
+}
+
+export interface AISettings {
+    geminiKey: string;
+    modelName: string;
+    systemGuideline: string;
+    hardcodedRules: AIRule[];
+    fallbackResponse: string;
+}
+
 export interface SectionVisibility {
     hero: boolean;
     about: boolean;
@@ -105,6 +118,7 @@ export interface SiteContent {
     resume: ResumeSettings; // Backwards compatibility if needed (optional)
     resumes: ResumeSettings[];
     appearance: AppearanceSettings;
+    aiSettings: AISettings;
 }
 
 // ============================================================
@@ -288,5 +302,19 @@ export const defaultContent: SiteContent = {
         accentColor: "#D4AF37",
         enableGrain: true,
         disabledCursorStyles: []
+    },
+    aiSettings: {
+        geminiKey: "",
+        modelName: "gemini-3-flash-preview",
+        systemGuideline: "You are the professional AI assistant for Khizar Rao's portfolio. Answer inquiries about his background, skills, projects, and services using the provided context. GUIDELINES: - Be concise (max 3 sentences). - Stay professional and confident. - If information isn't in context, don't hallucinate.",
+        hardcodedRules: [
+            { trigger: "hello", response: "Hello! I'm Khizar's AI assistant. How can I help you learn more about his professional work?" },
+            { trigger: "hi", response: "Hi there! I can tell you about Khizar's background, skills, or projects. What would you like to know?" },
+            { trigger: "who are you", response: "I'm an AI assistant dedicated to providing information about Khizar Rao's professional background and expertise." },
+            { trigger: "how are you", response: "I'm functioning perfectly and ready to help you learn more about Khizar's professional background!" },
+            { trigger: "bye", response: "Goodbye! Feel free to return if you have more questions about Khizar's work." },
+            { trigger: "thanks", response: "You're very welcome! Let me know if you need anything else." }
+        ],
+        fallbackResponse: "I'm sorry, I'm only trained to discuss Khizar's professional profile, skills, and projects. For other inquiries, please contact him at khizarraoworks@gmail.com."
     }
 };

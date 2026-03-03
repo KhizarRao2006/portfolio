@@ -9,7 +9,7 @@ import type { SiteContent, ExperienceItem, SkillGroup, ProjectItem, EducationIte
 // ============================================================
 // Section tabs
 // ============================================================
-const tabs = ["Visibility", "Hero", "About", "Experience", "Skills", "Projects", "Education", "Contact", "Legal", "Privacy", "Assets", "Settings"] as const;
+const tabs = ["Visibility", "Hero", "About", "Experience", "Skills", "Projects", "Education", "Contact", "Legal", "Privacy", "Assets", "Settings", "AI Dashboard"] as const;
 type Tab = (typeof tabs)[number];
 
 // ============================================================
@@ -282,6 +282,7 @@ export default function EditPage() {
                         {activeTab === "Privacy" && <LegalEditor content={content} setContent={setContent} type="privacy" />}
                         {activeTab === "Assets" && <AssetsEditor content={content} setContent={setContent} />}
                         {activeTab === "Settings" && <AppearanceEditor content={content} setContent={setContent} />}
+                        {activeTab === "AI Dashboard" && <AIManager content={content} setContent={setContent} />}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -1100,6 +1101,184 @@ function AppearanceEditor({ content, setContent }: EditorProps) {
                     ))}
                 </div>
             </Card>
+        </div>
+    );
+}
+
+// ============================================================
+// AI Management Dashboard
+// ============================================================
+function AIManager({ content, setContent }: EditorProps) {
+    const aiS = content.aiSettings || { geminiKey: "", modelName: "gemini-3-flash-preview", systemGuideline: "", hardcodedRules: [], fallbackResponse: "" };
+    const [logs, setLogs] = useState<any[]>([]);
+    const [loadingLogs, setLoadingLogs] = useState(false);
+    const [aiTab, setAiTab] = useState<"Settings" | "Guidelines" | "Rules" | "Logs">("Settings");
+    const [logSearch, setLogSearch] = useState("");
+
+    const update = (patch: Partial<typeof aiS>) => setContent((prev) => prev && { ...prev, aiSettings: { ...aiS, ...patch } });
+
+    useEffect(() => {
+        if (aiTab === "Logs") {
+            setLoadingLogs(true);
+            fetch("/api/logs")
+                .then(r => r.json())
+                .then(data => setLogs(Array.isArray(data) ? data : []))
+                .finally(() => setLoadingLogs(false));
+        }
+    }, [aiTab]);
+
+    const filteredLogs = logs.filter(log =>
+        log.userPrompt?.toLowerCase().includes(logSearch.toLowerCase()) ||
+        log.intent?.toLowerCase().includes(logSearch.toLowerCase())
+    );
+
+    return (
+        <div className="space-y-8">
+            <SectionTitle>AI Assistant Management</SectionTitle>
+
+            <div className="flex gap-2 mb-6 p-1 bg-card/5 border border-border rounded-xl w-fit">
+                {["Settings", "Guidelines", "Rules", "Logs"].map((t) => (
+                    <button
+                        key={t}
+                        onClick={() => setAiTab(t as any)}
+                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${aiTab === t ? "bg-accent text-background" : "text-muted hover:text-foreground"}`}
+                    >
+                        {t}
+                    </button>
+                ))}
+            </div>
+
+            {aiTab === "Settings" && (
+                <div className="space-y-6">
+                    <Card>
+                        <Label>Gemini API Key</Label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                value={aiS.geminiKey}
+                                onChange={(e) => update({ geminiKey: e.target.value })}
+                                placeholder="Paste your API key here..."
+                                className="w-full px-5 py-3 rounded-xl border border-border bg-card/10 focus:border-accent outline-none font-mono text-sm"
+                            />
+                        </div>
+                        <p className="text-[10px] text-muted mt-2">Stored securely in Firestore. If empty, the system uses the server-side environment variable.</p>
+                    </Card>
+
+                    <Card>
+                        <Label>Model Name</Label>
+                        <select
+                            value={aiS.modelName}
+                            onChange={(e) => update({ modelName: e.target.value })}
+                            className="w-full px-5 py-3 rounded-xl border border-border bg-card/10 focus:border-accent outline-none font-medium text-sm"
+                        >
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast/Stable)</option>
+                            <option value="gemini-3-flash-preview">Gemini 3 Flash Preview (Optimized)</option>
+                            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Intelligent)</option>
+                        </select>
+                    </Card>
+                </div>
+            )}
+
+            {aiTab === "Guidelines" && (
+                <div className="space-y-6">
+                    <Card>
+                        <Label>AI System Guideline (Base Prompt)</Label>
+                        <TextArea
+                            value={aiS.systemGuideline}
+                            onChange={(v) => update({ systemGuideline: v })}
+                            rows={6}
+                            placeholder="Tell the AI how to behave..."
+                        />
+                    </Card>
+                    <Card>
+                        <Label>Fallback Response</Label>
+                        <TextArea
+                            value={aiS.fallbackResponse}
+                            onChange={(v) => update({ fallbackResponse: v })}
+                            rows={3}
+                            placeholder="Shown when the AI doesn't know the answer or the query is off-topic."
+                        />
+                    </Card>
+                </div>
+            )}
+
+            {aiTab === "Rules" && (
+                <div className="space-y-4">
+                    <p className="text-xs text-muted">Define hardcoded responses for specific trigger words to ensure perfect accuracy for common greetings or facts.</p>
+                    {aiS.hardcodedRules.map((rule, i) => (
+                        <Card key={i} className="relative group">
+                            <div className="flex justify-between items-start mb-4">
+                                <Label>Rule {i + 1}</Label>
+                                <RemoveButton onClick={() => update({ hardcodedRules: aiS.hardcodedRules.filter((_, idx) => idx !== i) })} />
+                            </div>
+                            <div className="space-y-3">
+                                <Input
+                                    value={rule.trigger}
+                                    onChange={(v) => {
+                                        const next = [...aiS.hardcodedRules];
+                                        next[i] = { ...next[i], trigger: v };
+                                        update({ hardcodedRules: next });
+                                    }}
+                                    placeholder="Trigger word (e.g. hello)..."
+                                />
+                                <TextArea
+                                    value={rule.response}
+                                    onChange={(v) => {
+                                        const next = [...aiS.hardcodedRules];
+                                        next[i] = { ...next[i], response: v };
+                                        update({ hardcodedRules: next });
+                                    }}
+                                    rows={2}
+                                    placeholder="The exact response to return..."
+                                />
+                            </div>
+                        </Card>
+                    ))}
+                    <AddButton onClick={() => update({ hardcodedRules: [...aiS.hardcodedRules, { trigger: "", response: "" }] })} label="Add New Rule" />
+                </div>
+            )}
+
+            {aiTab === "Logs" && (
+                <Card>
+                    <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+                        <Label>Interaction History</Label>
+                        <div className="relative w-full md:w-64">
+                            <Input value={logSearch} onChange={setLogSearch} placeholder="Search prompts..." />
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        {loadingLogs ? (
+                            <div className="flex items-center justify-center p-12">
+                                <Loader2 size={24} className="animate-spin text-accent" />
+                            </div>
+                        ) : filteredLogs.length === 0 ? (
+                            <div className="text-center p-12 text-muted text-sm">No logs found.</div>
+                        ) : (
+                            filteredLogs.map((log: any) => (
+                                <div key={log.id} className="p-4 rounded-xl border border-border/50 bg-background/50 hover:border-accent/30 transition-colors">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${log.intent === 'ai_generated' ? 'bg-blue-500/10 text-blue-400' :
+                                                log.intent === 'hardcoded_rule' ? 'bg-amber-500/10 text-amber-400' :
+                                                    'bg-muted/10 text-muted'
+                                            }`}>
+                                            {log.intent || 'Unknown'}
+                                        </span>
+                                        <span className="text-[9px] text-muted font-mono">{new Date(log.timestamp).toLocaleString()}</span>
+                                    </div>
+                                    <p className="text-sm font-bold mb-1">Q: {log.userPrompt}</p>
+                                    <p className="text-xs text-muted mb-2">A: {log.aiResponse}</p>
+                                    <div className="flex gap-4 text-[9px] text-muted-foreground uppercase font-black tracking-tighter">
+                                        <span>Dur: {log.durationMs}ms</span>
+                                        <span>Session: {log.sessionId}</span>
+                                        <span>User: {log.userId}</span>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </Card>
+            )}
         </div>
     );
 }

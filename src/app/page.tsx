@@ -30,7 +30,8 @@ async function getContent(): Promise<SiteContent> {
             resume: { ...defaultContent.resume, ...(data.resume || {}) },
             resumes: data.resumes || defaultContent.resumes,
             legal: { ...defaultContent.legal, ...(data.legal || {}) },
-            privacy: { ...defaultContent.privacy, ...(data.privacy || {}) }
+            privacy: { ...defaultContent.privacy, ...(data.privacy || {}) },
+            aiSettings: { ...defaultContent.aiSettings, ...(data.aiSettings || {}) }
         } as SiteContent;
     } catch {
         return defaultContent;

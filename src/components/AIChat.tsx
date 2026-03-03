@@ -16,7 +16,18 @@ export default function AIChat() {
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [sessionId] = useState(() => Math.random().toString(36).substring(7));
+    const [userId, setUserId] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        let id = localStorage.getItem("chat-user-id");
+        if (!id) {
+            id = "user_" + Math.random().toString(36).substring(7);
+            localStorage.setItem("chat-user-id", id);
+        }
+        setUserId(id);
+    }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -32,11 +43,18 @@ export default function AIChat() {
         setMessages(prev => [...prev, { role: "user", content: userMsg }]);
         setIsLoading(true);
 
+        const startTime = Date.now();
+
         try {
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg }),
+                body: JSON.stringify({
+                    message: userMsg,
+                    sessionId,
+                    userId,
+                    startTime
+                }),
             });
 
             const data = await res.json();
