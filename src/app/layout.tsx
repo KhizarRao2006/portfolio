@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Cursor from "@/components/Cursor";
 import ScrollProgress from "@/components/ScrollProgress";
+import AIChat from "@/components/AIChat";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -86,6 +87,7 @@ export default function RootLayout({
                     <ScrollProgress />
                     <Cursor />
                     {children}
+                    <AIChat />
                 </ThemeProvider>
             </body>
         </html>
