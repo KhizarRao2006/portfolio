@@ -108,8 +108,8 @@ export default function AIChat() {
                                     className={`flex ${ms.role === "user" ? "justify-end" : "justify-start"}`}
                                 >
                                     <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${ms.role === "user"
-                                            ? "bg-accent text-background font-medium rounded-tr-none"
-                                            : "bg-muted/50 border border-border rounded-tl-none leading-relaxed"
+                                        ? "bg-accent text-background font-medium rounded-tr-none"
+                                        : "bg-muted/50 border border-border rounded-tl-none leading-relaxed"
                                         }`}>
                                         {ms.content}
                                     </div>
@@ -143,9 +143,9 @@ export default function AIChat() {
                                     <Send size={18} />
                                 </button>
                             </div>
-                            <p className="text-[8px] text-center mt-3 text-muted uppercase font-black tracking-widest">
-                                Powered by Gemini 1.5 Flash
-                            </p>
+                            {/* <p className="text-[8px] text-center mt-3 text-muted uppercase font-black tracking-widest">
+                                Powered by Gemini
+                            </p> */}
                         </div>
                     </motion.div>
                 )}

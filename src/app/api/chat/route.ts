@@ -10,6 +10,10 @@ const HARDCODED_RESPONSES: Record<string, string> = {
     "hi": "Hi there! I can tell you about Khizar's background, skills, or projects. What would you like to know?",
     "who are you": "I'm an AI assistant dedicated to providing information about Khizar Rao's professional background and expertise.",
     "how are you": "I'm functioning perfectly and ready to help you learn more about Khizar's professional background!",
+    "bye": "Goodbye! Feel free to return if you have more questions about Khizar's work.",
+    "goodbye": "Goodbye! Have a great day.",
+    "thanks": "You're very welcome! Let me know if you need anything else.",
+    "thank you": "Happy to help! Feel free to ask more about Khizar's projects or skills.",
 };
 
 export async function POST(req: Request) {
@@ -18,7 +22,7 @@ export async function POST(req: Request) {
 
         // 1. Sanitize & Validate
         const sanitizedMessage = message?.trim().slice(0, 500); // Limit length
-        const query = sanitizedMessage?.toLowerCase();
+        const query = sanitizedMessage?.toLowerCase().replace(/[?.,!]$/, "");
 
         if (!query) return NextResponse.json({ error: "Empty message" }, { status: 400 });
 
@@ -32,7 +36,10 @@ export async function POST(req: Request) {
             "khizar", "work", "project", "skill", "experience", "background", "education",
             "stack", "tech", "contact", "resume", "cv", "hire", "job", "career", "about",
             "developer", "engineer", "software", "code", "portfolio", "what can you do",
-            "services", "pricing", "cost", "location", "github", "linkedin"
+            "services", "pricing", "cost", "location", "github", "linkedin",
+            "python", "php", "javascript", "js", "typescript", "ts", "react", "next",
+            "flutter", "dart", "django", "laravel", "sql", "firebase", "mobile", "web",
+            "he know", "does he", "can he", "experience in"
         ];
 
         const isProfessional = professionalKeywords.some(k => query.includes(k)) || query.split(' ').length <= 2;
@@ -61,9 +68,9 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             generationConfig: {
-                maxOutputTokens: 250,
+                maxOutputTokens: 1000,
                 temperature: 0.7,
             }
         });
@@ -102,9 +109,13 @@ ${sanitizedMessage}
         `;
 
         const result = await model.generateContent(systemPrompt);
-        const responseText = result.response.text().trim();
+        const text = result.response.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        return NextResponse.json({ text: responseText });
+        if (!text) {
+            return NextResponse.json({ text: FALLBACK_RESPONSE });
+        }
+
+        return NextResponse.json({ text: text.trim().replace(/\n+/g, " ") });
 
     } catch (error) {
         console.error("Chat error:", error);

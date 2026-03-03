@@ -13,6 +13,8 @@ interface SettingsManagerProps {
 
 export default function SettingsManager({ defaults, resumeUrl }: SettingsManagerProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isHidden, setIsHidden] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const { theme, setTheme } = useTheme();
 
     // Safety fallback
@@ -24,11 +26,14 @@ export default function SettingsManager({ defaults, resumeUrl }: SettingsManager
     };
 
     const disabledStyles = safeDefaults.disabledCursorStyles;
-
     const [settings, setSettings] = useState<AppearanceSettings>(safeDefaults);
 
-    // Initial load from local storage or defaults
+    // Initial load for both settings and visibility
     useEffect(() => {
+        setIsMounted(true);
+        const hidden = localStorage.getItem("hide-customizer") === "true";
+        setIsHidden(hidden);
+
         const saved = localStorage.getItem("user-settings");
         if (saved) {
             try {
@@ -50,22 +55,59 @@ export default function SettingsManager({ defaults, resumeUrl }: SettingsManager
         window.dispatchEvent(new CustomEvent("settings-changed", { detail: settings }));
     }, [settings]);
 
+    const toggleVisibility = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const next = !isHidden;
+        setIsHidden(next);
+        localStorage.setItem("hide-customizer", String(next));
+    };
+
+    if (!isMounted) return null;
+
+    if (isHidden && !isOpen) return (
+        <button
+            onClick={() => setIsHidden(false)}
+            className="fixed bottom-6 right-24 z-50 w-8 h-8 rounded-full bg-background/50 blur-backdrop border border-border flex items-center justify-center text-muted hover:text-accent transition-colors"
+            title="Restore Customizer"
+        >
+            <Settings2 size={14} />
+        </button>
+    );
+
     return (
         <>
             {/* Floating Tag */}
-            <motion.button
-                onClick={() => setIsOpen(true)}
-                className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] bg-background/80 blur-backdrop border-l border-t border-b border-border p-3 pl-4 rounded-l-2xl shadow-2xl hover:bg-accent/10 transition-colors group flex items-center gap-3"
-                whileHover={{ x: -4 }}
+            <motion.div
+                className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-end gap-2"
+                initial={{ x: 100 }}
+                animate={{ x: 0 }}
             >
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                <motion.button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="bg-background/80 blur-backdrop border-l border-t border-b border-border p-3 pl-4 rounded-l-2xl shadow-2xl hover:bg-accent/10 transition-colors group flex items-center gap-3"
+                    whileHover={{ x: -4 }}
                 >
-                    <Settings2 size={24} className="text-accent" />
-                </motion.div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover:text-accent transition-colors [writing-mode:vertical-lr] rotate-180">Customize</span>
-            </motion.button>
+                    <motion.div
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        {isOpen ? <X size={24} className="text-accent" /> : <Settings2 size={24} className="text-accent" />}
+                    </motion.div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover:text-accent transition-colors [writing-mode:vertical-lr] rotate-180">
+                        {isOpen ? "Close" : "Customize"}
+                    </span>
+                </motion.button>
+
+                {!isOpen && (
+                    <button
+                        onClick={toggleVisibility}
+                        className="mr-2 p-1.5 rounded-full bg-background/50 border border-border text-muted hover:text-red-500 transition-colors"
+                        title="Hide Button"
+                    >
+                        <X size={12} />
+                    </button>
+                )}
+            </motion.div>
 
             {/* Sidebar Overlay */}
             <AnimatePresence>
