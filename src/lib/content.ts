@@ -102,7 +102,8 @@ export interface SiteContent {
     visibility: SectionVisibility;
     legal: LegalContent;
     privacy: LegalContent;
-    resume: ResumeSettings;
+    resume: ResumeSettings; // Backwards compatibility if needed (optional)
+    resumes: ResumeSettings[];
     appearance: AppearanceSettings;
 }
 
@@ -269,9 +270,19 @@ export const defaultContent: SiteContent = {
         ]
     },
     resume: {
-        url: "",
+        url: "/assets/khizar-rao-cv.pdf",
         label: "Download CV"
     },
+    resumes: [
+        {
+            url: "/assets/khizar-rao-cv.pdf",
+            label: "Download CV"
+        },
+        {
+            url: "/assets/khizar-rao-resume.pdf",
+            label: "Download Resume"
+        }
+    ],
     appearance: {
         cursorStyle: "glow",
         accentColor: "#D4AF37",

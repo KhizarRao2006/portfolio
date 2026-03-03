@@ -27,7 +27,10 @@ async function getContent(): Promise<SiteContent> {
             ...data,
             visibility: { ...defaultContent.visibility, ...(data.visibility || {}) },
             appearance: { ...defaultContent.appearance, ...(data.appearance || {}) },
-            resume: { ...defaultContent.resume, ...(data.resume || {}) }
+            resume: { ...defaultContent.resume, ...(data.resume || {}) },
+            resumes: data.resumes || defaultContent.resumes,
+            legal: { ...defaultContent.legal, ...(data.legal || {}) },
+            privacy: { ...defaultContent.privacy, ...(data.privacy || {}) }
         } as SiteContent;
     } catch {
         return defaultContent;
@@ -42,7 +45,7 @@ export default async function Home() {
         <main className="min-h-screen">
             <Navbar />
             <SettingsManager defaults={content.appearance} resumeUrl={content.resume?.url} />
-            {vis.hero && <Hero content={content.hero} resume={content.resume} />}
+            {vis.hero && <Hero content={content.hero} resumes={content.resumes} />}
             {vis.about && <About content={content.about} />}
             {vis.experience && <Experience content={content.experience} />}
             {vis.skills && <Skills content={content.skills} />}
